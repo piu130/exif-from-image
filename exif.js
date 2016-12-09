@@ -63,3 +63,23 @@ function filterPointerTags(tags) {
 function isJPEG(dataView) {
   return dataView.getUint16(0, false) === jpegStartNumber;
 }
+
+/**
+ * Returns the offset of the EXIF start
+ * @param {DataView} dataView
+ * @returns {number} -1 if no start found
+ */
+function searchStartOfExif(dataView) {
+  const length = dataView.byteLength;
+  let offset = 2; // +2 to skip jpegStartNumber
+  while (offset < length) {
+    const marker = dataView.getUint16(offset);
+    if (marker === exifStartNumber) {
+      return offset;
+    }
+    else if ((marker & 0xFF00) != 0xFF00) break; // not start with 0xFF -> no marker
+    else offset += 2;
+  }
+
+  return -1;
+}
