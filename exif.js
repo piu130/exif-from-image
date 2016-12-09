@@ -37,3 +37,20 @@ const exifPointers = [
   0x8825, // GPSInfoIFDPointer
   0xA005 // InteroperabilityIFDPointer
 ];
+
+/**
+ * Filters pointer tags
+ * @param tags
+ * @returns {{pointerTags}}
+ */
+function filterPointerTags(tags) {
+  const result = {};
+
+  for (let key in tags) {
+    if (tags.hasOwnProperty(key) && tags[key].pointer) {
+      result[key] = tags[key];
+    }
+  }
+
+  return result;
+}
