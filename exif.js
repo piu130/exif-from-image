@@ -65,6 +65,26 @@ function isJPEG(dataView) {
 }
 
 /**
+ * Reads the IFD data
+ * @param {DataView} dataView
+ * @param {number}   tiffStart
+ * @param {number}   ifdOffset
+ * @param {boolean}  littleEnd
+ * @returns {{ifdOffset: number, numOfEntries: number, nextIfdOffset: number}}
+ */
+function readIFDData(dataView, tiffStart, ifdOffset, littleEnd) {
+  let offset = tiffStart + ifdOffset;
+  const numOfEntries = dataView.getUint16(offset, littleEnd);
+  const nextIfdOffset = dataView.getUint16(offset + 2 + (numOfEntries * 12), littleEnd);
+
+  return {
+    ifdOffset,
+    numOfEntries,
+    nextIfdOffset
+  };
+}
+
+/**
  * Read the tag at the offset of tagStart
  * @param {DataView} dataView
  * @param {number}   tiffStart
