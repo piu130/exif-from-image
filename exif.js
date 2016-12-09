@@ -54,3 +54,12 @@ function filterPointerTags(tags) {
 
   return result;
 }
+
+/**
+ * Checks if dataView is from a JPEG file
+ * @param {DataView} dataView
+ * @returns {boolean}
+ */
+function isJPEG(dataView) {
+  return dataView.getUint16(0, false) === jpegStartNumber;
+}
