@@ -190,6 +190,29 @@ function readTag(dataView, tiffStart, tagStart, littleEnd) {
 }
 
 /**
+ * Reads the tags in the IFD
+ * @param {DataView}         dataView
+ * @param {number}           tiffStart
+ * @param {number}           ifdOffset
+ * @param {boolean}          littleEnd
+ * @param {number|undefined} count if undefined I fetch it from the next 16 bits
+ * @returns {{tags}} see readTag
+ */
+function readTags(dataView, tiffStart, ifdOffset, littleEnd, count) {
+  let offset = tiffStart + ifdOffset;
+
+  const numOfEntries = count || dataView.getUint16(offset, littleEnd); offset += 2;
+  const tags = {};
+
+  for (let i = 0; i < numOfEntries; i++) {
+    const identifier = dataView.getUint16(offset + (12 * i), littleEnd);
+    tags[identifier] = readTag(dataView, tiffStart, offset + (12 * i), littleEnd);
+  }
+
+  return tags;
+}
+
+/**
  * Returns the offset of the EXIF start
  * @param {DataView} dataView
  * @returns {number} -1 if no start found
