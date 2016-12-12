@@ -35,7 +35,7 @@ const bigEndianIndicator = 0x4D4D; // MM
 const exifPointers = [
   0x8769, // ExifIFDPointer
   0x8825, // GPSInfoIFDPointer
-  0xA005 // InteroperabilityIFDPointer
+  0xA005  // InteroperabilityIFDPointer
 ];
 
 /**
@@ -147,16 +147,20 @@ function readTag(dataView, tiffStart, tagStart, littleEnd) {
       tag.value = parseInt(value, 10);
       return tag;
     case 5: // 5 RATIONAL Two 32-bit unsigned integers
-      if (count > 1) {
-        console.log("TODO: count = " + count + " not supported for unsigned rational number. Please provide an example.");
-        tag.value = "TODO";
-        return tag;
+      pointer = count > 1 ? offset : pointer;
+      if(count === 1) {
+        numerator = dataView.getUint32(pointer, littleEnd);
+        denominator = dataView.getUint32(pointer + 4, littleEnd);
+        tag.value = numerator / denominator;
+      } else {
+        const values = [];
+        for (let i = 0; i < count; i++) {
+          numerator = dataView.getUint32(pointer + 4 * i, littleEnd);
+          denominator = dataView.getUint32(pointer + 4 * i + 4, littleEnd);
+          values.push(numerator/denominator);
+        }
+        tag.values = values;
       }
-      pointer = offset;
-      numerator = dataView.getUint32(pointer, littleEnd);
-      denominator = dataView.getUint32(pointer + 4, littleEnd);
-      // TODO handle count > 1
-      tag.value = numerator / denominator;
       return tag;
     case 6: // 6 SBYTE 8-bit signed integer
       pointer = count > 4 ? offset : pointer;
@@ -184,26 +188,29 @@ function readTag(dataView, tiffStart, tagStart, littleEnd) {
       tag.value = parseInt(value, 10);
       return tag;
     case 10: // 10 SRATIONAL Two 32-bit signed integers
-      if (count > 1) {
-        // TODO handle count > 1
-        console.log("TODO: count = " + count + " not supported for signed rational number. Please provide an example.");
-        tag.value = "TODO";
-        return tag;
+      pointer = count > 1 ? offset : pointer;
+      if(count === 1) {
+        numerator = dataView.getInt32(pointer, littleEnd);
+        denominator = dataView.getInt32(pointer + 4, littleEnd);
+        tag.value = numerator / denominator;
+      } else {
+        const values = [];
+        for (let i = 0; i < count; i++) {
+          numerator = dataView.getInt32(pointer + 4 * i, littleEnd);
+          denominator = dataView.getInt32(pointer + 4 * i + 4, littleEnd);
+          values.push(numerator/denominator);
+        }
+        tag.values = values;
       }
-      pointer = offset;
-      numerator = dataView.getInt32(pointer, littleEnd);
-      denominator = dataView.getInt32(pointer + 4, littleEnd);
-
-      tag.value = numerator / denominator;
       return tag;
     case 11: // 11 FLOAT 4-byte single-precision IEEE floating-point value
       // TODO
-      console.log("TODO: Float is currently not supported. Please provide an example.");
+      console.log("TODO: Double is currently not supported because I don't have any examples. Please provide an example.");
       tag.value = "TODO";
       return tag;
     case 12: // 12 DOUBLE 8-byte double-precision IEEE floating-point value
       // TODO
-      console.log("TODO: Double is currently not supported. Please provide an example.");
+      console.log("TODO: Double is currently not supported because I don't have any examples. Please provide an example.");
       tag.value = "TODO";
       return tag;
   }
