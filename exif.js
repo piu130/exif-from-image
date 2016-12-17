@@ -95,12 +95,12 @@ function readTag(dataView, tiffStart, tagStart, littleEnd) {
 
   let numerator, denominator;
   let value;
-  let values;
+  const values = [];
 
   // TODO use object spread ( {..., value} )
   switch (type) {
-    case 1: // 1 BYTE 8-bit unsigned integer
-      if(count === 1) {
+    case 1: {// 1 BYTE 8-bit unsigned integer
+      if (count === 1) {
         return {
           ...tag,
           value: dataView.getUint8(pointer)
@@ -108,98 +108,199 @@ function readTag(dataView, tiffStart, tagStart, littleEnd) {
       }
       pointer = count > 4 ? offset : pointer;
       for (let i = 0; i < count; i++) {
-        value += dataView.getUint8(pointer + i);
+        values.push(dataView.getUint8(pointer + i));
       }
-      tag.value = parseInt(value, 10);
-      return tag;
-    case 2: // 2 ASCII 8-bit, NULL-terminated string
-      pointer = count > 4 ? offset : pointer;
-      for (let i = 0; i < count - 1; i++) { // -1 to remove 0x00
-        value += String.fromCharCode(dataView.getUint8(pointer + i));
+      return {
+        ...tag,
+        values
+      };
+    }
+    case 2: {// 2 ASCII 8-bit, NULL-terminated string
+      if (count === 1) {
+        value = String.fromCharCode(dataView.getUint8(pointer));
+      } else {
+        value = "";
+        pointer = count > 4 ? offset : pointer;
+        for (let i = 0; i < count - 1; i++) { // -1 to remove 0x00
+          value += String.fromCharCode(dataView.getUint8(pointer + i));
+        }
       }
-      tag.value = value;
-      return tag;
-    case 3: // 3 SHORT 16-bit unsigned integer
+
+      return {
+        ...tag,
+        value
+      };
+    }
+    case 3: {// 3 SHORT 16-bit unsigned integer
+      if (count === 1) {
+        return {
+          ...tag,
+          value: dataView.getUint16(pointer, littleEnd)
+        };
+      }
       pointer = count > 2 ? offset : pointer;
       for (let i = 0; i < count; i++) {
-        value += dataView.getUint16(pointer + 2 * i, littleEnd);
+        values.push(dataView.getUint16(pointer + 2 * i, littleEnd));
       }
-      tag.value = parseInt(value, 10);
-      return tag;
-    case 4: // 4 LONG 32-bit unsigned integer
-      pointer = count > 1 ? offset : pointer;
+
+      return {
+        ...tag,
+        values
+      };
+    }
+    case 4: {// 4 LONG 32-bit unsigned integer
+      if (count === 1) {
+        return {
+          ...tag,
+          value: dataView.getUint32(pointer, littleEnd)
+        };
+      }
+      pointer = offset;
       for (let i = 0; i < count; i++) {
-        value += dataView.getUint32(pointer + 4 * i, littleEnd);
+        values.push(dataView.getUint32(pointer + 4 * i, littleEnd));
       }
-      tag.value = parseInt(value, 10);
-      return tag;
-    case 5: // 5 RATIONAL Two 32-bit unsigned integers
-      pointer = count > 1 ? offset : pointer;
-      if(count === 1) {
+
+      return {
+        ...tag,
+        values
+      };
+    }
+    case 5: {// 5 RATIONAL Two 32-bit unsigned integers
+      pointer = offset;
+      if (count === 1) {
         numerator = dataView.getUint32(pointer, littleEnd);
         denominator = dataView.getUint32(pointer + 4, littleEnd);
-        tag.value = numerator / denominator;
-      } else {
-        const values = [];
-        for (let i = 0; i < count; i++) {
-          numerator = dataView.getUint32(pointer + 4 * i, littleEnd);
-          denominator = dataView.getUint32(pointer + 4 * i + 4, littleEnd);
-          values.push(numerator/denominator);
-        }
-        tag.values = values;
+        return {
+          ...tag,
+          value: numerator / denominator
+        };
       }
-      return tag;
-    case 6: // 6 SBYTE 8-bit signed integer
+      for (let i = 0; i < count; i++) {
+        numerator = dataView.getUint32(pointer + 4 * i, littleEnd);
+        denominator = dataView.getUint32(pointer + 4 * i + 4, littleEnd);
+        values.push(numerator / denominator);
+      }
+
+      return {
+        ...tag,
+        values
+      };
+    }
+    case 6: {// 6 SBYTE 8-bit signed integer
+      if (count === 1) {
+        return {
+          ...tag,
+          value: dataView.getInt8(pointer)
+        };
+      }
       pointer = count > 4 ? offset : pointer;
       for (let i = 0; i < count; i++) {
-        value += dataView.getInt8(pointer + i);
+        values.push(dataView.getInt8(pointer + i));
       }
-      tag.value = parseInt(value, 10);
-      return tag;
-    case 7: // 7 UNDEFINE 8-bit byte
+
+      return {
+        ...tag,
+        values
+      };
+    }
+    case 7: {// 7 UNDEFINE 8-bit byte
       // TODO
       tag.value = "TODO";
       return tag;
-    case 8: // 8 SSHORT 16-bit signed integer
+    }
+    case 8: {// 8 SSHORT 16-bit signed integer
+      if (count === 1) {
+        return {
+          ...tag,
+          value: dataView.getInt16(pointer, littleEnd)
+        };
+      }
       pointer = count > 2 ? offset : pointer;
       for (let i = 0; i < count; i++) {
-        value += dataView.getInt16(pointer + 2 * i, littleEnd);
+        values.push(dataView.getInt16(pointer + 2 * i, littleEnd));
       }
-      tag.value = parseInt(value, 10);
-      return tag;
-    case 9: // 9 SLONG 32-bit signed integer
-      pointer = count > 1 ? offset : pointer;
+
+      return {
+        ...tag,
+        values
+      };
+    }
+    case 9: {// 9 SLONG 32-bit signed integer
+      if (count === 1) {
+        return {
+          ...tag,
+          value: dataView.getInt32(pointer, littleEnd)
+        };
+      }
+      pointer = offset;
       for (let i = 0; i < count; i++) {
-        value += dataView.getInt32(pointer + 4 * i, littleEnd);
+        values.push(dataView.getInt32(pointer + 4 * i, littleEnd));
       }
-      tag.value = parseInt(value, 10);
-      return tag;
-    case 10: // 10 SRATIONAL Two 32-bit signed integers
-      pointer = count > 1 ? offset : pointer;
-      if(count === 1) {
+
+      return {
+        ...tag,
+        values
+      };
+    }
+    case 10: {// 10 SRATIONAL Two 32-bit signed integers
+      pointer = offset;
+      if (count === 1) {
         numerator = dataView.getInt32(pointer, littleEnd);
         denominator = dataView.getInt32(pointer + 4, littleEnd);
-        tag.value = numerator / denominator;
-      } else {
-        const values = [];
-        for (let i = 0; i < count; i++) {
-          numerator = dataView.getInt32(pointer + 4 * i, littleEnd);
-          denominator = dataView.getInt32(pointer + 4 * i + 4, littleEnd);
-          values.push(numerator/denominator);
-        }
-        tag.values = values;
+        return {
+          ...tag,
+          value: numerator / denominator
+        };
       }
-      return tag;
-    case 11: // 11 FLOAT 4-byte single-precision IEEE floating-point value
+      for (let i = 0; i < count; i++) {
+        numerator = dataView.getInt32(pointer + 4 * i, littleEnd);
+        denominator = dataView.getInt32(pointer + 4 * i + 4, littleEnd);
+        values.push(numerator / denominator);
+      }
+
+      return {
+        ...tag,
+        values
+      };
+    }
+    case 11: {// 11 FLOAT 4-byte single-precision IEEE floating-point value
       // TODO
-      console.log("TODO: Double is currently not supported because I don't have any examples. Please provide an example.");
-      tag.value = "TODO";
-      return tag;
-    case 12: // 12 DOUBLE 8-byte double-precision IEEE floating-point value
+      console.log("TODO: Double is currently not tested because I don't have any examples. Please provide an example.");
+      if(count === 1) {
+        return {
+          ...tag,
+          value: dataView.getFloat32(pointer, littleEnd)
+        };
+      }
+      pointer = offset;
+      for (let i = 0; i < count; i++) {
+        values.push(dataView.getFloat32(pointer + 4 * i, littleEnd));
+      }
+
+      return {
+        ...tag,
+        values
+      };
+    }
+    case 12: {// 12 DOUBLE 8-byte double-precision IEEE floating-point value
       // TODO
-      console.log("TODO: Double is currently not supported because I don't have any examples. Please provide an example.");
-      tag.value = "TODO";
-      return tag;
+      console.log("TODO: Double is currently not tested because I don't have any examples. Please provide an example.");
+      pointer = offset;
+      if(count === 1) {
+        return {
+          ...tag,
+          value: dataView.getFloat64(pointer, littleEnd)
+        };
+      }
+      for (let i = 0; i < count; i++) {
+        values.push(dataView.getFloat64(pointer + 8 * i, littleEnd));
+      }
+
+      return {
+        ...tag,
+        values
+      };
+    }
   }
 }
 
