@@ -69,7 +69,7 @@ function readIFDData(dataView, tiffStart, ifdOffset, littleEnd) {
  * @param {number}   tiffStart
  * @param {number}   tagStart
  * @param {boolean}  littleEnd
- * @returns {{type: number, count: number, offset: number, [value]: number|string}}
+ * @returns {{type: number, count: number, offset: number, [value]: number|string, [values]: [number]}}
  */
 function readTag(dataView, tiffStart, tagStart, littleEnd) {
   // TODO refactor whole function
@@ -97,7 +97,6 @@ function readTag(dataView, tiffStart, tagStart, littleEnd) {
   let value;
   const values = [];
 
-  // TODO use object spread ( {..., value} )
   switch (type) {
     case 1: {// 1 BYTE 8-bit unsigned integer
       if (count === 1) {
