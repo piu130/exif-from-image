@@ -1,4 +1,4 @@
-import {jpegStartNumber, exifPointer, exifStartNumber} from './exif-tags';
+import {jpegStartNumber, exifPointer, exifStartNumber} from './exif-tags'
 
 /**
  * Transforms a file to a DataView
@@ -6,15 +6,15 @@ import {jpegStartNumber, exifPointer, exifStartNumber} from './exif-tags';
  * @param onSuccess Success callback
  * @param onError   Error callback
  */
-function fileToDataView(file, onSuccess, onError) {
-  const reader = new FileReader();
+function fileToDataView (file, onSuccess, onError) {
+  const reader = new FileReader()
   reader.onload = function (e) {
-    onSuccess(new DataView(e.target.result));
-  };
+    onSuccess(new DataView(e.target.result))
+  }
   reader.onerror = function (error) {
-    onError(error);
-  };
-  reader.readAsArrayBuffer(file);
+    onError(error)
+  }
+  reader.readAsArrayBuffer(file)
 }
 
 /**
@@ -22,16 +22,16 @@ function fileToDataView(file, onSuccess, onError) {
  * @param tags
  * @returns {{pointerTags}}
  */
-function filterPointerTags(tags) {
-  const result = {};
+function filterPointerTags (tags) {
+  const result = {}
 
   for (let key in tags) {
     if (tags.hasOwnProperty(key) && tags[key].pointer) {
-      result[key] = tags[key];
+      result[key] = tags[key]
     }
   }
 
-  return result;
+  return result
 }
 
 /**
@@ -39,8 +39,8 @@ function filterPointerTags(tags) {
  * @param {DataView} dataView
  * @returns {boolean}
  */
-function isJPEG(dataView) {
-  return dataView.getUint16(0, false) === jpegStartNumber;
+function isJPEG (dataView) {
+  return dataView.getUint16(0, false) === jpegStartNumber
 }
 
 /**
@@ -51,16 +51,16 @@ function isJPEG(dataView) {
  * @param {boolean}  littleEnd
  * @returns {{ifdOffset: number, numOfEntries: number, nextIfdOffset: number}}
  */
-function readIFDData(dataView, tiffStart, ifdOffset, littleEnd) {
-  let offset = tiffStart + ifdOffset;
-  const numOfEntries = dataView.getUint16(offset, littleEnd);
-  const nextIfdOffset = dataView.getUint16(offset + 2 + (numOfEntries * 12), littleEnd);
+function readIFDData (dataView, tiffStart, ifdOffset, littleEnd) {
+  let offset = tiffStart + ifdOffset
+  const numOfEntries = dataView.getUint16(offset, littleEnd)
+  const nextIfdOffset = dataView.getUint16(offset + 2 + (numOfEntries * 12), littleEnd)
 
   return {
     ifdOffset,
     numOfEntries,
     nextIfdOffset
-  };
+  }
 }
 
 /**
@@ -71,234 +71,234 @@ function readIFDData(dataView, tiffStart, ifdOffset, littleEnd) {
  * @param {boolean}  littleEnd
  * @returns {{type: number, count: number, offset: number, [value]: number|string, [values]: [number]}}
  */
-function readTag(dataView, tiffStart, tagStart, littleEnd) {
+function readTag (dataView, tiffStart, tagStart, littleEnd) {
   // TODO refactor whole function
-  let pointer = tagStart;
-  const identifier = dataView.getUint16(pointer, littleEnd); pointer += 2;
-  const type = dataView.getUint16(pointer, littleEnd); pointer += 2;
-  const count = dataView.getUint32(pointer, littleEnd); pointer += 4;
-  let offset = dataView.getUint32(pointer, littleEnd);
+  let pointer = tagStart
+  const identifier = dataView.getUint16(pointer, littleEnd); pointer += 2
+  const type = dataView.getUint16(pointer, littleEnd); pointer += 2
+  const count = dataView.getUint32(pointer, littleEnd); pointer += 4
+  let offset = dataView.getUint32(pointer, littleEnd)
 
   const tag = {
     identifier,
     type,
     count,
     offset
-  };
-
-  if (exifPointer.hasOwnProperty(identifier)) {
-    tag.pointer = true;
-    return tag;
   }
 
-  offset += tiffStart;
+  if (exifPointer.hasOwnProperty(identifier)) {
+    tag.pointer = true
+    return tag
+  }
 
-  let numerator, denominator;
-  let value;
-  const values = [];
+  offset += tiffStart
+
+  let numerator, denominator
+  let value
+  const values = []
 
   switch (type) {
-    case 1: {// 1 BYTE 8-bit unsigned integer
+    case 1: { // 1 BYTE 8-bit unsigned integer
       if (count === 1) {
         return {
           ...tag,
           value: dataView.getUint8(pointer)
-        };
+        }
       }
-      pointer = count > 4 ? offset : pointer;
+      pointer = count > 4 ? offset : pointer
       for (let i = 0; i < count; i++) {
-        values.push(dataView.getUint8(pointer + i));
+        values.push(dataView.getUint8(pointer + i))
       }
       return {
         ...tag,
         values
-      };
+      }
     }
-    case 2: {// 2 ASCII 8-bit, NULL-terminated string
+    case 2: { // 2 ASCII 8-bit, NULL-terminated string
       if (count === 1) {
-        value = String.fromCharCode(dataView.getUint8(pointer));
+        value = String.fromCharCode(dataView.getUint8(pointer))
       } else {
-        value = "";
-        pointer = count > 4 ? offset : pointer;
+        value = ''
+        pointer = count > 4 ? offset : pointer
         for (let i = 0; i < count - 1; i++) { // -1 to remove 0x00
-          value += String.fromCharCode(dataView.getUint8(pointer + i));
+          value += String.fromCharCode(dataView.getUint8(pointer + i))
         }
       }
 
       return {
         ...tag,
         value
-      };
+      }
     }
-    case 3: {// 3 SHORT 16-bit unsigned integer
+    case 3: { // 3 SHORT 16-bit unsigned integer
       if (count === 1) {
         return {
           ...tag,
           value: dataView.getUint16(pointer, littleEnd)
-        };
+        }
       }
-      pointer = count > 2 ? offset : pointer;
+      pointer = count > 2 ? offset : pointer
       for (let i = 0; i < count; i++) {
-        values.push(dataView.getUint16(pointer + 2 * i, littleEnd));
+        values.push(dataView.getUint16(pointer + 2 * i, littleEnd))
       }
 
       return {
         ...tag,
         values
-      };
+      }
     }
-    case 4: {// 4 LONG 32-bit unsigned integer
+    case 4: { // 4 LONG 32-bit unsigned integer
       if (count === 1) {
         return {
           ...tag,
           value: dataView.getUint32(pointer, littleEnd)
-        };
+        }
       }
-      pointer = offset;
+      pointer = offset
       for (let i = 0; i < count; i++) {
-        values.push(dataView.getUint32(pointer + 4 * i, littleEnd));
+        values.push(dataView.getUint32(pointer + 4 * i, littleEnd))
       }
 
       return {
         ...tag,
         values
-      };
+      }
     }
-    case 5: {// 5 RATIONAL Two 32-bit unsigned integers
-      pointer = offset;
+    case 5: { // 5 RATIONAL Two 32-bit unsigned integers
+      pointer = offset
       if (count === 1) {
-        numerator = dataView.getUint32(pointer, littleEnd);
-        denominator = dataView.getUint32(pointer + 4, littleEnd);
+        numerator = dataView.getUint32(pointer, littleEnd)
+        denominator = dataView.getUint32(pointer + 4, littleEnd)
         return {
           ...tag,
           value: numerator / denominator
-        };
+        }
       }
       for (let i = 0; i < count; i++) {
-        numerator = dataView.getUint32(pointer + 4 * i, littleEnd);
-        denominator = dataView.getUint32(pointer + 4 * i + 4, littleEnd);
-        values.push(numerator / denominator);
+        numerator = dataView.getUint32(pointer + 4 * i, littleEnd)
+        denominator = dataView.getUint32(pointer + 4 * i + 4, littleEnd)
+        values.push(numerator / denominator)
       }
 
       return {
         ...tag,
         values
-      };
+      }
     }
-    case 6: {// 6 SBYTE 8-bit signed integer
+    case 6: { // 6 SBYTE 8-bit signed integer
       if (count === 1) {
         return {
           ...tag,
           value: dataView.getInt8(pointer)
-        };
+        }
       }
-      pointer = count > 4 ? offset : pointer;
+      pointer = count > 4 ? offset : pointer
       for (let i = 0; i < count; i++) {
-        values.push(dataView.getInt8(pointer + i));
+        values.push(dataView.getInt8(pointer + i))
       }
 
       return {
         ...tag,
         values
-      };
+      }
     }
-    case 7: {// 7 UNDEFINE 8-bit byte
+    case 7: { // 7 UNDEFINE 8-bit byte
       // TODO
-      tag.value = "TODO";
-      return tag;
+      tag.value = 'TODO'
+      return tag
     }
-    case 8: {// 8 SSHORT 16-bit signed integer
+    case 8: { // 8 SSHORT 16-bit signed integer
       if (count === 1) {
         return {
           ...tag,
           value: dataView.getInt16(pointer, littleEnd)
-        };
+        }
       }
-      pointer = count > 2 ? offset : pointer;
+      pointer = count > 2 ? offset : pointer
       for (let i = 0; i < count; i++) {
-        values.push(dataView.getInt16(pointer + 2 * i, littleEnd));
+        values.push(dataView.getInt16(pointer + 2 * i, littleEnd))
       }
 
       return {
         ...tag,
         values
-      };
+      }
     }
-    case 9: {// 9 SLONG 32-bit signed integer
+    case 9: { // 9 SLONG 32-bit signed integer
       if (count === 1) {
         return {
           ...tag,
           value: dataView.getInt32(pointer, littleEnd)
-        };
+        }
       }
-      pointer = offset;
+      pointer = offset
       for (let i = 0; i < count; i++) {
-        values.push(dataView.getInt32(pointer + 4 * i, littleEnd));
+        values.push(dataView.getInt32(pointer + 4 * i, littleEnd))
       }
 
       return {
         ...tag,
         values
-      };
+      }
     }
-    case 10: {// 10 SRATIONAL Two 32-bit signed integers
-      pointer = offset;
+    case 10: { // 10 SRATIONAL Two 32-bit signed integers
+      pointer = offset
       if (count === 1) {
-        numerator = dataView.getInt32(pointer, littleEnd);
-        denominator = dataView.getInt32(pointer + 4, littleEnd);
+        numerator = dataView.getInt32(pointer, littleEnd)
+        denominator = dataView.getInt32(pointer + 4, littleEnd)
         return {
           ...tag,
           value: numerator / denominator
-        };
+        }
       }
       for (let i = 0; i < count; i++) {
-        numerator = dataView.getInt32(pointer + 4 * i, littleEnd);
-        denominator = dataView.getInt32(pointer + 4 * i + 4, littleEnd);
-        values.push(numerator / denominator);
+        numerator = dataView.getInt32(pointer + 4 * i, littleEnd)
+        denominator = dataView.getInt32(pointer + 4 * i + 4, littleEnd)
+        values.push(numerator / denominator)
       }
 
       return {
         ...tag,
         values
-      };
+      }
     }
-    case 11: {// 11 FLOAT 4-byte single-precision IEEE floating-point value
+    case 11: { // 11 FLOAT 4-byte single-precision IEEE floating-point value
       // TODO
-      console.log("TODO: Double is currently not tested because I don't have any examples. Please provide an example.");
-      if(count === 1) {
+      console.log("TODO: Double is currently not tested because I don't have any examples. Please provide an example.")
+      if (count === 1) {
         return {
           ...tag,
           value: dataView.getFloat32(pointer, littleEnd)
-        };
+        }
       }
-      pointer = offset;
+      pointer = offset
       for (let i = 0; i < count; i++) {
-        values.push(dataView.getFloat32(pointer + 4 * i, littleEnd));
+        values.push(dataView.getFloat32(pointer + 4 * i, littleEnd))
       }
 
       return {
         ...tag,
         values
-      };
+      }
     }
-    case 12: {// 12 DOUBLE 8-byte double-precision IEEE floating-point value
+    case 12: { // 12 DOUBLE 8-byte double-precision IEEE floating-point value
       // TODO
-      console.log("TODO: Double is currently not tested because I don't have any examples. Please provide an example.");
-      pointer = offset;
-      if(count === 1) {
+      console.log("TODO: Double is currently not tested because I don't have any examples. Please provide an example.")
+      pointer = offset
+      if (count === 1) {
         return {
           ...tag,
           value: dataView.getFloat64(pointer, littleEnd)
-        };
+        }
       }
       for (let i = 0; i < count; i++) {
-        values.push(dataView.getFloat64(pointer + 8 * i, littleEnd));
+        values.push(dataView.getFloat64(pointer + 8 * i, littleEnd))
       }
 
       return {
         ...tag,
         values
-      };
+      }
     }
   }
 }
@@ -312,18 +312,18 @@ function readTag(dataView, tiffStart, tagStart, littleEnd) {
  * @param {number|undefined} count if undefined I fetch it from the next 16 bits
  * @returns {{tags}} see readTag
  */
-function readTags(dataView, tiffStart, ifdOffset, littleEnd, count) {
-  let offset = tiffStart + ifdOffset;
+function readTags (dataView, tiffStart, ifdOffset, littleEnd, count) {
+  let offset = tiffStart + ifdOffset
 
-  const numOfEntries = count || dataView.getUint16(offset, littleEnd); offset += 2;
-  const tags = {};
+  const numOfEntries = count || dataView.getUint16(offset, littleEnd); offset += 2
+  const tags = {}
 
   for (let i = 0; i < numOfEntries; i++) {
-    const identifier = dataView.getUint16(offset + (12 * i), littleEnd);
-    tags[identifier] = readTag(dataView, tiffStart, offset + (12 * i), littleEnd);
+    const identifier = dataView.getUint16(offset + (12 * i), littleEnd)
+    tags[identifier] = readTag(dataView, tiffStart, offset + (12 * i), littleEnd)
   }
 
-  return tags;
+  return tags
 }
 
 /**
@@ -331,19 +331,18 @@ function readTags(dataView, tiffStart, ifdOffset, littleEnd, count) {
  * @param {DataView} dataView
  * @returns {number} -1 if no start found
  */
-function searchStartOfExif(dataView) {
-  const length = dataView.byteLength;
-  let offset = 2; // +2 to skip jpegStartNumber
+function searchStartOfExif (dataView) {
+  const length = dataView.byteLength
+  let offset = 2 // +2 to skip jpegStartNumber
   while (offset < length) {
-    const marker = dataView.getUint16(offset);
+    const marker = dataView.getUint16(offset)
     if (marker === exifStartNumber) {
-      return offset;
-    }
-    else if ((marker & 0xFF00) != 0xFF00) break; // not start with 0xFF -> no marker
-    else offset += 2;
+      return offset
+    } else if ((marker & 0xFF00) != 0xFF00) break // not start with 0xFF -> no marker
+    else offset += 2
   }
 
-  return -1;
+  return -1
 }
 
-export {fileToDataView, filterPointerTags, isJPEG, readIFDData, readTag,readTags, searchStartOfExif}
+export {fileToDataView, filterPointerTags, isJPEG, readIFDData, readTag, readTags, searchStartOfExif}
