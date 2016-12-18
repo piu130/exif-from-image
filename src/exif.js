@@ -338,7 +338,7 @@ function searchStartOfExif (dataView) {
     const marker = dataView.getUint16(offset)
     if (marker === exifStartNumber) {
       return offset
-    } else if ((marker & 0xFF00) != 0xFF00) break // not start with 0xFF -> no marker
+    } else if ((marker & 0xFF00) !== 0xFF00) break // not start with 0xFF -> no marker
     else offset += 2
   }
 
