@@ -2,7 +2,7 @@
  * Hex value for 'MM'. This indicates big endian.
  * @type {number}
  */
-const bigEndianIndicator = 0x4D4D; // MM
+const bigEndianIndicator = 0x4D4D // MM
 
 /**
  * EXIF tags
@@ -105,7 +105,7 @@ const exifIfd = {
     0xA434: 'LensModel',
     0xA435: 'LensSerialNumber'
   }
-};
+}
 
 /**
  * EXIF pointers
@@ -115,19 +115,19 @@ const exifPointer = {
   0x8769: 'ExifIFDPointer',
   0x8825: 'GPSInfoIFDPointer',
   0xA005: 'InteroperabilityIFDPointer'
-};
+}
 
 /**
  * Indicates start of the EXIF attribute
  * @type {number}
  */
-const exifStartNumber = 0xFFE1;
+const exifStartNumber = 0xFFE1
 
 /**
  * Hex value for 'Exif'
  * @type {number}
  */
-const exifString = 0x45786966; // Exif
+const exifString = 0x45786966 // Exif
 
 /**
  * GPS tags
@@ -166,19 +166,19 @@ const gps = {
   0x001D: 'GPSDateStamp',
   0x001E: 'GPSDifferential',
   0x001F: 'GPSHPositioningError'
-};
+}
 
 /**
  * Indicates start of a JPEG
  * @type {number}
  */
-const jpegStartNumber = 0xFFD8;
+const jpegStartNumber = 0xFFD8
 
 /**
  * Hex value for 'II'. This indicates little endian.
  * @type {number}
  */
-const littleEndianIndicator = 0x4949; // II
+const littleEndianIndicator = 0x4949 // II
 
 /**
  * TIFF tags
@@ -223,15 +223,15 @@ const tiff = {
     0x013B: 'Artist',
     0x8298: 'Copyright'
   }
-};
+}
 
-function getAll() {
+function getAll () {
   return Object.assign({},
     exifPointer,
     tiff.imageDataStructure, tiff.recordingOffset, tiff.imageDataCharacteristic, tiff.other,
     exifIfd.version, exifIfd.imageDataCharacteristic, exifIfd.imageConfiguration, exifIfd.userInformation, exifIfd.fileInformation, exifIfd.dateAndTime, exifIfd.pictureTakingConditions, exifIfd.shootingSituation, exifIfd.others,
     gps
-  );
+  )
 }
 
-export {jpegStartNumber, exifStartNumber, exifString, littleEndianIndicator, bigEndianIndicator, exifPointer, tiff, exifIfd, gps}
+export {jpegStartNumber, exifStartNumber, exifString, littleEndianIndicator, bigEndianIndicator, exifPointer, tiff, exifIfd, gps, getAll}
