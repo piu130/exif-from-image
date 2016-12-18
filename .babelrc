@@ -1,0 +1,10 @@
+{
+  "presets": [
+    ["env", {
+      "targets": {
+        "firefox": 50
+      }
+    }]
+  ],
+  "plugins": ["transform-object-rest-spread", "transform-es2015-arrow-functions"]
+}
