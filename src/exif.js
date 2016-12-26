@@ -1,4 +1,4 @@
-import {jpegStartNumber, exifPointer, exifStartNumber, getAllTags} from 'exif-tags'
+import {jpegStartNumber, exifPointer, exifStartNumber, exifString, littleEndianIndicator, getAllTags} from 'exif-tags'
 
 /**
  * Transforms a file to a DataView
@@ -32,6 +32,46 @@ function filterPointerTags (tags) {
   }
 
   return result
+}
+
+function getAllTagsFromFile (file, onSuccess, onError) {
+  fileToDataView(
+    file,
+    function (dataView) {
+      if (!isJPEG(dataView)) { throw new Error('No JPEG.') }
+
+      const exifStart = searchStartOfExif(dataView, 0)
+
+      let offset = exifStart + 2 // +2 skip exifStartNumber
+      // const exifSectionLen = dataView.getUint16(offset)
+      offset += 2
+      if (dataView.getUint32(offset) !== exifString) return -1
+      offset += 6 // +2 bytes zeroed
+
+      const tiffStart = offset
+      const littleEnd = dataView.getUint16(offset) === littleEndianIndicator
+      offset += 4 // +2 2A00 = TIFF marker
+
+      let ifdData = {}
+      ifdData.nextIfdOffset = dataView.getUint32(offset, littleEnd) // first 4 byte in dir indicates the start of the IFD -> 0x08 if direct after header
+      const tags = {}
+
+      do {
+        ifdData = readIFDData(dataView, tiffStart, ifdData.nextIfdOffset, littleEnd)
+        const currentTags = readTags(dataView, tiffStart, ifdData.ifdOffset, littleEnd, ifdData.numOfEntries)
+
+        Object.assign(tags, currentTags)
+
+        const pointers = filterPointerTags(currentTags)
+        for (let pointer in pointers) {
+          Object.assign(tags, readTags(dataView, tiffStart, pointers[pointer].offset, littleEnd, undefined))
+        }
+      } while (ifdData.nextIfdOffset !== 0x00)
+
+      onSuccess(tags)
+    },
+    onError
+  )
 }
 
 /**
@@ -350,4 +390,4 @@ function searchStartOfExif (dataView, startOffset) {
   return -1
 }
 
-export {fileToDataView, filterPointerTags, isJPEG, readIFDData, readTag, readTags, searchStartOfExif}
+export {fileToDataView, filterPointerTags, isJPEG, readIFDData, readTag, readTags, searchStartOfExif, getAllTagsFromFile}
