@@ -40,7 +40,7 @@ const exifIfd = {
     0x9291: 'SubSecTimeOriginal',
     0x9292: 'SubSecTimeDigitized'
   },
-  pictureTakingConditions: {
+  pictureTakingCondition: {
     0x829A: 'ExposureTime',
     0x829D: 'FNumber',
     0x8822: 'ExposureProgram',
@@ -225,7 +225,11 @@ const tiff = {
   }
 }
 
-function getAll () {
+/**
+ * Returns all tags in a flat structure
+ * @returns {*}
+ */
+function getAllTags () {
   return Object.assign({},
     exifPointer,
     tiff.imageDataStructure, tiff.recordingOffset, tiff.imageDataCharacteristic, tiff.other,
@@ -234,4 +238,4 @@ function getAll () {
   )
 }
 
-export {jpegStartNumber, exifStartNumber, exifString, littleEndianIndicator, bigEndianIndicator, exifPointer, tiff, exifIfd, gps, getAll}
+export {jpegStartNumber, exifStartNumber, exifString, littleEndianIndicator, bigEndianIndicator, exifPointer, tiff, exifIfd, gps, getAllTags}
