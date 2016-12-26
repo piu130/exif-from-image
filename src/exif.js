@@ -1,4 +1,4 @@
-import {jpegStartNumber, exifPointer, exifStartNumber} from './exif-tags'
+import {jpegStartNumber, exifPointer, exifStartNumber} from 'exif-tags'
 
 /**
  * Transforms a file to a DataView
