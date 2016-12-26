@@ -1,4 +1,4 @@
-import {jpegStartNumber, exifPointer, exifStartNumber, exifString, littleEndianIndicator, getAllTags} from 'exif-tags'
+import {jpegStartNumber, exifPointer, exifStartNumber, exifString, littleEndianIndicator, allTags} from 'exif-tags'
 
 /**
  * Transforms a file to a DataView
@@ -34,6 +34,12 @@ function filterPointerTags (tags) {
   return result
 }
 
+/**
+ * Returns all tags from a file
+ * @param file
+ * @param onSuccess
+ * @param onError
+ */
 function getAllTagsFromFile (file, onSuccess, onError) {
   fileToDataView(
     file,
@@ -118,14 +124,15 @@ function readTag (dataView, tiffStart, tagStart, littleEnd) {
   const count = dataView.getUint32(pointer, littleEnd); pointer += 4
   let offset = dataView.getUint32(pointer, littleEnd)
 
-  const tagName = getAllTags()[identifier] || identifier
+  const tagName = allTags[identifier] || identifier
 
   const tag = {
     tagName,
     identifier,
     type,
     count,
-    offset
+    offset,
+    tagStart
   }
 
   if (exifPointer.hasOwnProperty(identifier)) {
