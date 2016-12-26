@@ -332,12 +332,13 @@ function readTags (dataView, tiffStart, ifdOffset, littleEnd, count) {
 /**
  * Returns the offset of the EXIF start
  * @param {DataView} dataView
+ * @param {number}   startOffset To search next start (e.g. FFE2)
  * @returns {number} -1 if no start found
  */
-function searchStartOfExif (dataView) {
+function searchStartOfExif (dataView, startOffset) {
   const length = dataView.byteLength
 
-  let offset = 2 // +2 to skip jpegStartNumber
+  let offset = startOffset + 2 || 2 //+2 to skip jpegStartNumber
   while (offset < length) {
     const marker = dataView.getUint16(offset)
     if (marker === exifStartNumber) {
