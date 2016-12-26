@@ -1,4 +1,4 @@
-import {jpegStartNumber, exifPointer, exifStartNumber} from 'exif-tags'
+import {jpegStartNumber, exifPointer, exifStartNumber, getAllTags} from 'exif-tags'
 
 /**
  * Transforms a file to a DataView
@@ -72,14 +72,16 @@ function readIFDData (dataView, tiffStart, ifdOffset, littleEnd) {
  * @returns {{type: number, count: number, offset: number, [value]: number|string, [values]: [number]}}
  */
 function readTag (dataView, tiffStart, tagStart, littleEnd) {
-  // TODO refactor whole function
   let pointer = tagStart
   const identifier = dataView.getUint16(pointer, littleEnd); pointer += 2
   const type = dataView.getUint16(pointer, littleEnd); pointer += 2
   const count = dataView.getUint32(pointer, littleEnd); pointer += 4
   let offset = dataView.getUint32(pointer, littleEnd)
 
+  const tagName = getAllTags()[identifier] || identifier
+
   const tag = {
+    tagName,
     identifier,
     type,
     count,
@@ -320,6 +322,7 @@ function readTags (dataView, tiffStart, ifdOffset, littleEnd, count) {
 
   for (let i = 0; i < numOfEntries; i++) {
     const identifier = dataView.getUint16(offset + (12 * i), littleEnd)
+
     tags[identifier] = readTag(dataView, tiffStart, offset + (12 * i), littleEnd)
   }
 
@@ -333,6 +336,7 @@ function readTags (dataView, tiffStart, ifdOffset, littleEnd, count) {
  */
 function searchStartOfExif (dataView) {
   const length = dataView.byteLength
+
   let offset = 2 // +2 to skip jpegStartNumber
   while (offset < length) {
     const marker = dataView.getUint16(offset)
