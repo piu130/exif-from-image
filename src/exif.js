@@ -338,7 +338,7 @@ function readTags (dataView, tiffStart, ifdOffset, littleEnd, count) {
 function searchStartOfExif (dataView, startOffset) {
   const length = dataView.byteLength
 
-  let offset = startOffset + 2 || 2 //+2 to skip jpegStartNumber
+  let offset = startOffset + 2 || 2 // +2 to skip jpegStartNumber
   while (offset < length) {
     const marker = dataView.getUint16(offset)
     if (marker === exifStartNumber) {
