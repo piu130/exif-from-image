@@ -124,7 +124,7 @@ function readTag (dataView, tiffStart, tagStart, littleEnd) {
   const count = dataView.getUint32(pointer, littleEnd); pointer += 4
   let offset = dataView.getUint32(pointer, littleEnd)
 
-  const tagName = allTags[identifier] || identifier
+  const tagName = allTags[identifier] || 'unknown'
 
   const tag = {
     tagName,
@@ -147,7 +147,8 @@ function readTag (dataView, tiffStart, tagStart, littleEnd) {
   const values = []
 
   switch (type) {
-    case 1: { // 1 BYTE 8-bit unsigned integer
+    case 1: // 1 BYTE 8-bit unsigned integer
+    case 7: {
       if (count === 1) {
         return {
           ...tag,
@@ -250,11 +251,6 @@ function readTag (dataView, tiffStart, tagStart, littleEnd) {
         ...tag,
         values
       }
-    }
-    case 7: { // 7 UNDEFINE 8-bit byte
-      // TODO
-      tag.value = 'TODO'
-      return tag
     }
     case 8: { // 8 SSHORT 16-bit signed integer
       if (count === 1) {
