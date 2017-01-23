@@ -2,7 +2,7 @@
   "name": "exif",
   "version": "0.0.0",
   "description": "",
-  "main": "exif.js",
+  "main": "src/exif.js",
   "scripts": {
     "build": "webpack",
     "lint": "eslint src/*.js",
