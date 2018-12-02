@@ -5,14 +5,16 @@
   "main": "src/exif.js",
   "scripts": {
     "build": "webpack",
-    "lint": "eslint src/*.js",
+    "lint": "neutrino lint",
     "test": "karma start karma.conf.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://piu130@github.com/piu130/exif.git"
   },
-  "pre-commit": ["lint"],
+  "pre-commit": [
+    "lint"
+  ],
   "author": "Piu130",
   "license": "GPL-2.0",
   "bugs": {
@@ -20,21 +22,19 @@
   },
   "homepage": "https://github.com/piu130/exif#readme",
   "devDependencies": {
+    "@neutrinojs/standardjs": "^8.3.0",
     "babel-core": "^6.21.0",
     "babel-loader": "^6.2.10",
     "babel-plugin-transform-es2015-arrow-functions": "^6.8.0",
     "babel-plugin-transform-object-rest-spread": "^6.20.2",
     "babel-preset-env": "^1.1.4",
     "cross-env": "^3.1.3",
-    "eslint": "^3.12.2",
-    "eslint-config-standard": "^6.2.1",
-    "eslint-plugin-promise": "^3.4.0",
-    "eslint-plugin-standard": "^2.0.1",
     "jasmine-core": "^2.5.2",
     "karma": "^1.3.0",
     "karma-babel-preprocessor": "^6.0.1",
     "karma-jasmine": "^1.1.0",
     "karma-phantomjs-launcher": "^1.0.2",
+    "neutrino": "^8.3.0",
     "pre-commit": "^1.2.2",
     "webpack": "^2.2.0-rc.2"
   },
