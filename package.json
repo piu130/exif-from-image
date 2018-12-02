@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://Piu130@github.com/Piu130/exif.git"
+    "url": "git+https://piu130@github.com/piu130/exif.git"
   },
   "pre-commit": ["lint"],
   "author": "Piu130",
-  "license": "MIT",
+  "license": "GPL-2.0",
   "bugs": {
-    "url": "https://github.com/Piu130/exif/issues"
+    "url": "https://github.com/piu130/exif/issues"
   },
-  "homepage": "https://github.com/Piu130/exif#readme",
+  "homepage": "https://github.com/piu130/exif#readme",
   "devDependencies": {
     "babel-core": "^6.21.0",
     "babel-loader": "^6.2.10",
