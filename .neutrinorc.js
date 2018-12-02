@@ -1,5 +1,11 @@
 module.exports = {
   use: [
-    '@neutrinojs/standardjs'
+    '@neutrinojs/standardjs',
+    [
+      '@neutrinojs/library',
+      {
+        name: 'exif'
+      }
+    ]
   ]
 }

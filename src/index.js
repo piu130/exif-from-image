@@ -1,4 +1,16 @@
-import {jpegStartNumber, exifPointer, exifStartNumber, exifString, littleEndianIndicator, allTags} from 'exif-tags'
+import {
+  jpegStartNumber,
+  exifPointer,
+  exifStartNumber,
+  exifString,
+  littleEndianIndicator,
+  allTags
+} from 'exif-tags'
+
+async function start () {
+  console.log(await fileToDataView('./exif.js'))
+}
+start()
 
 /**
  * Transforms a file to a DataView
@@ -6,14 +18,10 @@ import {jpegStartNumber, exifPointer, exifStartNumber, exifString, littleEndianI
  * @param onSuccess Success callback
  * @param onError   Error callback
  */
-function fileToDataView (file, onSuccess, onError) {
+async function fileToDataView (file) {
   const reader = new FileReader()
-  reader.onload = function (e) {
-    onSuccess(new DataView(e.target.result))
-  }
-  reader.onerror = function (error) {
-    onError(error)
-  }
+  reader.onload = (e) => Promise.resolve(new DataView(e.target.result))
+  reader.onerror = (error) => Promise.reject(error)
   reader.readAsArrayBuffer(file)
 }
 
@@ -393,4 +401,13 @@ function searchStartOfExif (dataView, startOffset) {
   return -1
 }
 
-export {fileToDataView, filterPointerTags, isJPEG, readIFDData, readTag, readTags, searchStartOfExif, getAllTagsFromFile}
+export {
+  fileToDataView,
+  filterPointerTags,
+  isJPEG,
+  readIFDData,
+  readTag,
+  readTags,
+  searchStartOfExif,
+  getAllTagsFromFile
+}
