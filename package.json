@@ -5,8 +5,7 @@
   "main": "src/exif.js",
   "scripts": {
     "build": "webpack",
-    "lint": "neutrino lint",
-    "test": "karma start karma.conf.js"
+    "lint": "neutrino lint"
   },
   "repository": {
     "type": "git",
@@ -15,7 +14,7 @@
   "pre-commit": [
     "lint"
   ],
-  "author": "Piu130",
+  "author": "piu130",
   "license": "GPL-2.0",
   "bugs": {
     "url": "https://github.com/piu130/exif/issues"
@@ -29,11 +28,6 @@
     "babel-plugin-transform-object-rest-spread": "^6.20.2",
     "babel-preset-env": "^1.1.4",
     "cross-env": "^3.1.3",
-    "jasmine-core": "^2.5.2",
-    "karma": "^1.3.0",
-    "karma-babel-preprocessor": "^6.0.1",
-    "karma-jasmine": "^1.1.0",
-    "karma-phantomjs-launcher": "^1.0.2",
     "neutrino": "^8.3.0",
     "pre-commit": "^1.2.2",
     "webpack": "^2.2.0-rc.2"
