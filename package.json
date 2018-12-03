@@ -4,8 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "build": "neutrino build",
-    "lint": "neutrino lint"
+    "lint": "neutrino lint --use @neutrinojs/standardjs"
   },
   "repository": {
     "type": "git",
@@ -21,10 +20,9 @@
   },
   "homepage": "https://github.com/piu130/exif#readme",
   "dependencies": {
-    "exif-tags": "^3.0.1"
+    "exif-tags": "^3.0.3"
   },
   "devDependencies": {
-    "@neutrinojs/library": "^8.3.0",
     "@neutrinojs/standardjs": "^8.3.0",
     "neutrino": "^8.3.0",
     "pre-commit": "^1.2.2"
