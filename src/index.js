@@ -102,7 +102,7 @@ export const readIFDData = (dataView, tiffStart, ifdOffset, littleEnd) => {
 /**
  * @typedef tag
  * @type {Object}
- * @property {string} tagName Human readable tag name.
+ * @property {string} name Human readable tag name.
  * @property {number} identifier Tag identifier.
  * @property {number} type EXIF type of the tag.
  * @property {number} count Number of tags.
@@ -126,10 +126,8 @@ export function readTag (dataView, tiffStart, tagStart, littleEnd) {
   const count = dataView.getUint32(pointer, littleEnd); pointer += 4
   let offset = dataView.getUint32(pointer, littleEnd)
 
-  const tagName = allTags[identifier] || 'unknown'
-
   const tag = {
-    tagName,
+    name: allTags[identifier] || 'unknown',
     identifier,
     type,
     count,
