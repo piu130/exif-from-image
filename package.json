@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://piu130@github.com/piu130/exif.git"
+    "url": "git+https://piu130@github.com/piu130/exif-from-image.git"
   },
   "pre-commit": [
     "lint"
@@ -16,9 +16,9 @@
   "author": "piu130",
   "license": "GPL-2.0",
   "bugs": {
-    "url": "https://github.com/piu130/exif/issues"
+    "url": "https://github.com/piu130/exif-from-image/issues"
   },
-  "homepage": "https://github.com/piu130/exif#readme",
+  "homepage": "https://github.com/piu130/exif-from-image#readme",
   "dependencies": {
     "exif-tags": "^3.0.3"
   },
