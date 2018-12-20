@@ -8,6 +8,8 @@ import {
 } from 'exif-tags'
 import { readValue } from './readType'
 
+export * from './readType'
+
 /**
  * Filters pointer tags.
  * @param {Object.<number, tag>} tags Tags to filter.
@@ -119,7 +121,7 @@ export const readIFDData = (dataView, tiffStart, ifdOffset, littleEnd) => {
  * @param {boolean} littleEnd Flag defining reading in little or big endian.
  * @returns {tag} Read tag.
  */
-export function readTag (dataView, tiffStart, tagStart, littleEnd) {
+export const readTag = (dataView, tiffStart, tagStart, littleEnd) => {
   let pointer = tagStart
   const identifier = dataView.getUint16(pointer, littleEnd); pointer += 2
   const type = dataView.getUint16(pointer, littleEnd); pointer += 2
@@ -152,10 +154,10 @@ export function readTag (dataView, tiffStart, tagStart, littleEnd) {
  * @param {number} tiffStart Start offset of tiff tags.
  * @param {number} ifdOffset Start offset of idf tags.
  * @param {boolean} littleEnd Flag defining reading in little or big endian.
- * @param {number=undefined} [count] Tags to read. If not specified it's fetched from the next 16 bits.
+ * @param {number} [count=null] Tags to read. If not specified it's fetched from the next 16 bits.
  * @returns {Object<number, tag>} Tags by identifier.
  */
-export const readTags = (dataView, tiffStart, ifdOffset, littleEnd, count = undefined) => {
+export const readTags = (dataView, tiffStart, ifdOffset, littleEnd, count = null) => {
   let offset = tiffStart + ifdOffset
 
   const numOfEntries = count || dataView.getUint16(offset, littleEnd); offset += 2
@@ -174,7 +176,7 @@ export const readTags = (dataView, tiffStart, ifdOffset, littleEnd, count = unde
  * Returns the offset of the marker start.
  * @param {DataView} dataView DataView.
  * @param {number} marker Marker (e.g. ffe1).
- * @param {number=0} startOffset Offset to skip for searching next start.
+ * @param {number} startOffset=0 Offset to skip for searching next start.
  * @returns {number} Offset of EXIF start, -1 if no start found.
  */
 export const searchMarker = (dataView, marker, startOffset = 0) => {
@@ -188,7 +190,7 @@ export const searchMarker = (dataView, marker, startOffset = 0) => {
 /**
  * Returns the offset of the EXIF start.
  * @param {DataView} dataView DataView.
- * @param {number=0} startOffset Offset to skip for searching next start.
+ * @param {number} startOffset=0 Offset to skip for searching next start.
  * @returns {number} Offset of EXIF start, -1 if no start found.
  */
 export const searchStartOfExif = (dataView, startOffset = 0) => searchMarker(dataView, exifStartNumber, startOffset)
