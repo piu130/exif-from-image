@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/piu130/exif-from-image#readme",
   "dependencies": {
-    "exif-tags": "^3.0.3"
+    "exif-tags": "^3.1.0"
   },
   "devDependencies": {
     "@neutrinojs/standardjs": "^8.3.0",
