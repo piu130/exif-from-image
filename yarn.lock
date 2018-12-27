@@ -1589,10 +1589,10 @@ execa@^0.7.0:
     signal-exit "^3.0.0"
     strip-eof "^1.0.0"
 
-exif-tags@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/exif-tags/-/exif-tags-3.0.3.tgz#d851e0925c3f10f2ba5a710eff3ffb4431490b1d"
-  integrity sha512-UtR+YMF73Bvgi3qUVcWoae01vafUo7aseoBspQRufV5bLuln6W/n8+oyNZ+tbIBSX5XIUngwg10ywX4NJOwvWA==
+exif-tags@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/exif-tags/-/exif-tags-4.0.0.tgz#1e616180263b1ec4a5ed1d9a592e7a0121a9767c"
+  integrity sha512-SlRa7afsy0xLKHzxNIoB79vNqqq0U5Ec7G6q90L5Y/MyTjFBtkIKEZrk9YLgUURbh27WqAQQ6UfncgidCsRWbg==
 
 expand-brackets@^0.1.4:
   version "0.1.5"

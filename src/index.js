@@ -105,7 +105,7 @@ export const readIFDData = (dataView, tiffStart, ifdOffset, littleEnd) => {
  * @typedef tag
  * @type {Object}
  * @property {string} name Human readable tag name.
- * @property {number} identifier Tag identifier.
+ * @property {number} id Tag id.
  * @property {number} type EXIF type of the tag.
  * @property {number} count Number of tags.
  * @property {number} offset Offset of the tag.
@@ -123,21 +123,21 @@ export const readIFDData = (dataView, tiffStart, ifdOffset, littleEnd) => {
  */
 export const readTag = (dataView, tiffStart, tagStart, littleEnd) => {
   let pointer = tagStart
-  const identifier = dataView.getUint16(pointer, littleEnd); pointer += 2
+  const id = dataView.getUint16(pointer, littleEnd); pointer += 2
   const type = dataView.getUint16(pointer, littleEnd); pointer += 2
   const count = dataView.getUint32(pointer, littleEnd); pointer += 4
   let offset = dataView.getUint32(pointer, littleEnd)
 
   const tag = {
-    name: allTags[identifier] || 'unknown',
-    identifier,
+    name: allTags[id] || 'unknown',
+    id,
     type,
     count,
     offset,
     tagStart
   }
 
-  if (exifPointerTags.hasOwnProperty(identifier)) {
+  if (exifPointerTags.hasOwnProperty(id)) {
     tag.pointer = true
     return tag
   }
@@ -155,7 +155,7 @@ export const readTag = (dataView, tiffStart, tagStart, littleEnd) => {
  * @param {number} ifdOffset Start offset of idf tags.
  * @param {boolean} littleEnd Flag defining reading in little or big endian.
  * @param {number} [count=null] Tags to read. If not specified it's fetched from the next 16 bits.
- * @returns {Object<number, tag>} Tags by identifier.
+ * @returns {Object<number, tag>} Tags by id.
  */
 export const readTags = (dataView, tiffStart, ifdOffset, littleEnd, count = null) => {
   let offset = tiffStart + ifdOffset
@@ -164,9 +164,9 @@ export const readTags = (dataView, tiffStart, ifdOffset, littleEnd, count = null
   const tags = {}
 
   for (let i = 0; i < numOfEntries; i++) {
-    const identifier = dataView.getUint16(offset + (12 * i), littleEnd)
+    const id = dataView.getUint16(offset + (12 * i), littleEnd)
 
-    tags[identifier] = readTag(dataView, tiffStart, offset + (12 * i), littleEnd)
+    tags[id] = readTag(dataView, tiffStart, offset + (12 * i), littleEnd)
   }
 
   return tags
